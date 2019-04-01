@@ -24,40 +24,44 @@ casper.viewport(390, 2220);
 //var text = encodeURIComponent("고양이");
 //casper.open('https://www.flickr.com/search/?text=' + text);
 
-var target = '.KC1QD > div:nth-child(3) > div > div > div > a'
+var target = '.KC1QD > div:nth-child(3) > div > div a'
 var targetUri = 'https://www.instagram.com'
 
 casper.waitForSelector(target, function(){
-    console.log(target + "을 찾았습니다.")
+    //console.log(target + "을 찾았습니다.")
     this.wait(3000, function(){
         this.capture('1 pageShot.png');
         this.captureSelector('2 targetShot.png', target);
 
-        targetUri = targetUri + this.getElementsInfo(target)[0].attributes.href
-    })
-}, function(){
-    console.log(target + "을 찾지 못했습니다.")
-    this.capture("failed.png")
-})
+        var targetHrefList = this.getElementsInfo(target)
 
+        var i = 0;
+        this.repeat(targetHrefList.length, function(){
+            this.thenOpen(targetUri + targetHrefList[i].attributes.href, function(){
+                this.echo('링크 염 : ' + targetUri + targetHrefList[i].attributes.href)
+                
+                this.wait(1000, function(){
+                    this.echo('1초끝')
 
-casper.then(function(){
-        casper.thenOpen(targetUri, function(){
-            this.echo('링크엽니다 : ' + targetUri)
-            casper.wait(3000, function(){
-                this.echo('3초끝')
-        
-                casper.capture('3 targetPageShot.png');
-            
-                this.waitForSelector('.ltEKP', function(){
-                console.log(target + "을 찾았습니다.")
-                this.captureSelector('4 targetShot.png', '.ltEKP')
-            })
+                    //this.capture(i + 'targetPageShot.png');
+                
+                    this.waitForSelector('.ltEKP video', function(){
+                        console.log('타겟찾음 : ' + '.ltEKP video')
+                    }, function(){
+                        console.log('타겟 못 찾음 : ' + '.ltEKP video')
+                        this.captureSelector('screenShot/' + i + 'targetShot.png', '.ltEKP', {quality: 100})
+                    })
+                    i++
+                })
             })
         })
+    })
+}, function(){
+    console.log(target + "을 못 찾음")
 })
 
 //실제 실행
 casper.run(function(){
-    casper.exit()
+    this.echo('크롤링 종료')
+    this.exit()
 }); 
