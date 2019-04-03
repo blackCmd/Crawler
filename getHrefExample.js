@@ -11,11 +11,11 @@ casper.userAgent('WebView User-Agent: Mozilla/5.0 (Linux; Android 9; SM-G950N Bu
 
 // 빈 페이지 준비
 casper.start(TARGET_URI, function(){
-    this.echo('스타트 : ' + TARGET_URI)
+    this.echo('*** START CRAWLING : ' + TARGET_URI + ' ***')
 })
 
 //브라우저의 '보이는' 화면크기 설정(만약 이미지가 더 크다면 더 커짐)
-casper.viewport(390, 2220);
+casper.viewport(467, 2220);
 
 //브라우저 열기
 //casper.open(TARGET_URL);
@@ -38,19 +38,21 @@ casper.waitForSelector(target, function(){
         var i = 0;
         this.repeat(targetHrefList.length, function(){
             this.thenOpen(targetUri + targetHrefList[i].attributes.href, function(){
-                this.echo('링크 염 : ' + targetUri + targetHrefList[i].attributes.href)
+                this.echo('=============')
+                this.echo('LINK OPEN : ' + targetUri + targetHrefList[i].attributes.href)
                 
                 this.wait(1000, function(){
-                    this.echo('1초끝')
-
                     //this.capture(i + 'targetPageShot.png');
-                
                     this.waitForSelector('.ltEKP video', function(){
-                        console.log('타겟찾음 : ' + '.ltEKP video')
+                        console.log('VIDEO TARGET FOUND : ' + '.ltEKP video')
+                        this.echo('=============')
                     }, function(){
-                        console.log('타겟 못 찾음 : ' + '.ltEKP video')
-                        this.captureSelector('screenShot/' + i + 'targetShot.png', '.ltEKP', {quality: 100})
+                        console.log('VIDEO TARGET CAN NOT FOUND : ' + '.ltEKP video')
+                        this.captureSelector('screenShot/' + i + 'targetShot.png', '.ltEKP', {format: 'png', quality: 100})
+                        //this.capture('screenShot/' + i + 'targetShot.png')
+                        this.echo('=============')
                     })
+                
                     i++
                 })
             })
@@ -62,6 +64,6 @@ casper.waitForSelector(target, function(){
 
 //실제 실행
 casper.run(function(){
-    this.echo('크롤링 종료')
+    this.echo('*** END CRAWLING ***')
     this.exit()
 }); 
